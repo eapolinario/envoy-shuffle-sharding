@@ -21,67 +21,10 @@ static_resources:
               - match:
                   prefix: "/"
                   headers:
-                  - name: x-target-host
-                    string_match:
-                      exact: "0"
+                  - name: x-target-cluster
+                    present_match: true
                 route:
-                  cluster: backend_0
-              - match:
-                  prefix: "/"
-                  headers:
-                  - name: x-target-host
-                    string_match:
-                      exact: "1"
-                route:
-                  cluster: backend_1
-              - match:
-                  prefix: "/"
-                  headers:
-                  - name: x-target-host
-                    string_match:
-                      exact: "2"
-                route:
-                  cluster: backend_2
-              - match:
-                  prefix: "/"
-                  headers:
-                  - name: x-target-host
-                    string_match:
-                      exact: "3"
-                route:
-                  cluster: backend_3
-              - match:
-                  prefix: "/"
-                  headers:
-                  - name: x-target-host
-                    string_match:
-                      exact: "4"
-                route:
-                  cluster: backend_4
-              - match:
-                  prefix: "/"
-                  headers:
-                  - name: x-target-host
-                    string_match:
-                      exact: "5"
-                route:
-                  cluster: backend_5
-              - match:
-                  prefix: "/"
-                  headers:
-                  - name: x-target-host
-                    string_match:
-                      exact: "6"
-                route:
-                  cluster: backend_6
-              - match:
-                  prefix: "/"
-                  headers:
-                  - name: x-target-host
-                    string_match:
-                      exact: "7"
-                route:
-                  cluster: backend_7
+                  cluster_header: x-target-cluster
               - match:
                   prefix: "/"
                 route:
@@ -150,6 +93,9 @@ static_resources:
                   local shard_index = (path_hash % shard_size) + 1
                   local selected_host = selected_hosts[shard_index]
                   request_handle:headers():replace("x-target-host", tostring(selected_host))
+                  
+                  -- Set cluster name for routing
+                  request_handle:headers():replace("x-target-cluster", "backend_" .. tostring(selected_host))
                   
                   -- Log for debugging
                   request_handle:logInfo(string.format(
