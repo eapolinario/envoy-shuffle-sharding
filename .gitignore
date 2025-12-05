@@ -49,3 +49,8 @@ env/
 
 # xDS control plane binary
 xds-control-plane/xds-server
+
+# Rust/WASM
+shuffle-shard-wasm/target/
+shuffle-shard-wasm/Cargo.lock
+*.wasm
