@@ -25,10 +25,6 @@ static_resources:
                     present_match: true
                 route:
                   cluster_header: x-target-cluster
-              - match:
-                  prefix: "/"
-                route:
-                  cluster: backend_0
           http_filters:
           - name: envoy.filters.http.lua
             typed_config:
