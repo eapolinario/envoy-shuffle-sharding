@@ -1,16 +1,21 @@
 FROM envoyproxy/envoy-build-ubuntu:0ca52447572ee105a4730da5e76fe47c9c5a7c64 AS build
 
-WORKDIR /build
+# Create non-root user for building
+RUN useradd -m -u 1000 envoyuser && \
+    chown -R envoyuser:envoyuser /tmp
+
+USER envoyuser
+WORKDIR /home/envoyuser/build
 
 # Clone Envoy
 RUN git clone https://github.com/envoyproxy/envoy.git && \
     cd envoy && \
     git checkout v1.28.0
 
-WORKDIR /build/envoy
+WORKDIR /home/envoyuser/build/envoy
 
 # Copy our custom filter
-COPY envoy-filter-rtds /build/envoy/source/extensions/filters/http/shuffle_shard
+COPY --chown=envoyuser:envoyuser envoy-filter-rtds /home/envoyuser/build/envoy/source/extensions/filters/http/shuffle_shard
 
 # Add our filter to extensions_build_config.bzl
 RUN echo "    'envoy.filters.http.shuffle_shard': '//source/extensions/filters/http/shuffle_shard:config'," >> \
@@ -26,7 +31,7 @@ RUN apt-get update && \
     apt-get install -y ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /build/envoy/bazel-bin/source/exe/envoy-static /usr/local/bin/envoy
+COPY --from=build /home/envoyuser/build/envoy/bazel-bin/source/exe/envoy-static /usr/local/bin/envoy
 
 RUN chmod +x /usr/local/bin/envoy
 
