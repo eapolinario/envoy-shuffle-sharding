@@ -26,6 +26,7 @@ class BackendHandler(BaseHTTPRequestHandler):
             "path": self.path,
             "customer_id": self.headers.get("x-customer-id"),
             "shard_assignment": shard_display,
+            "shard_config": self.headers.get("x-shard-config"),
             "target_host_index": self.headers.get("x-target-host"),
             "note": "Host index 0-7 maps to Server ID 1-8"
         }
