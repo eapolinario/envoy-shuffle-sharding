@@ -46,3 +46,6 @@ env/
 # Test artifacts
 *.tmp
 *.temp
+
+# xDS control plane binary
+xds-control-plane/xds-server
